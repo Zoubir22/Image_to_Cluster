@@ -1,0 +1,120 @@
+---
+# Ansible Playbook for deploying custom Nginx image to K3d cluster
+# This playbook imports the Docker image and deploys it to Kubernetes
+
+- name: Deploy Custom Nginx to K3d
+  hosts: localhost
+  gather_facts: true
+  vars:
+    cluster_name: "lab"
+    image_name: "custom-nginx:latest"
+    app_name: "custom-nginx"
+    app_port: 80
+    node_port: 30080
+
+  tasks:
+    # ============================================
+    # STEP 1: Check prerequisites
+    # ============================================
+    - name: Check if K3d cluster exists
+      ansible.builtin.command: k3d cluster list -o json
+      register: cluster_list
+      changed_when: false
+      failed_when: false
+      become: true
+
+    - name: Parse cluster list
+      ansible.builtin.set_fact:
+        cluster_exists: "{{ cluster_name in (cluster_list.stdout | from_json | map(attribute='name') | list) }}"
+      when: cluster_list.rc == 0
+
+    - name: Fail if cluster does not exist
+      ansible.builtin.fail:
+        msg: |
+          Le cluster K3d '{{ cluster_name }}' n'existe pas.
+          Créez-le d'abord avec: k3d cluster create {{ cluster_name }} --servers 1 --agents 2
+      when: cluster_list.rc != 0 or not cluster_exists
+
+    # ============================================
+    # STEP 2: Import Docker image into K3d
+    # ============================================
+    - name: Check if Docker image exists locally
+      ansible.builtin.command: docker images -q {{ image_name }}
+      register: docker_image_check
+      changed_when: false
+      become: true
+
+    - name: Fail if Docker image does not exist
+      ansible.builtin.fail:
+        msg: |
+          L'image Docker '{{ image_name }}' n'existe pas.
+          Construisez-la d'abord avec Packer: make build
+      when: docker_image_check.stdout == ""
+
+    - name: Import Docker image into K3d cluster
+      ansible.builtin.command: k3d image import {{ image_name }} -c {{ cluster_name }}
+      register: import_result
+      changed_when: "'successfully imported' in import_result.stdout or import_result.rc == 0"
+      become: true
+
+    - name: Display import status
+      ansible.builtin.debug:
+        msg: "Image '{{ image_name }}' imported successfully into K3d cluster '{{ cluster_name }}'"
+
+    # ============================================
+    # STEP 3: Deploy Kubernetes resources
+    # ============================================
+    - name: Create Kubernetes Deployment
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ playbook_dir }}/k8s/deployment.yml"
+      register: deployment_result
+
+    - name: Create Kubernetes Service
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ playbook_dir }}/k8s/service.yml"
+      register: service_result
+
+    # ============================================
+    # STEP 4: Wait for deployment to be ready
+    # ============================================
+    - name: Wait for deployment to be available
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: "{{ app_name }}"
+        namespace: default
+      register: deployment_status
+      until: >
+        deployment_status.resources[0].status.availableReplicas is defined and
+        deployment_status.resources[0].status.availableReplicas == deployment_status.resources[0].spec.replicas
+      retries: 30
+      delay: 5
+
+    # ============================================
+    # STEP 5: Display access information
+    # ============================================
+    - name: Get service information
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Service
+        name: "{{ app_name }}"
+        namespace: default
+      register: service_info
+
+    - name: Display deployment success message
+      ansible.builtin.debug:
+        msg: |
+          ========================================
+          ✅ Déploiement réussi !
+          ========================================
+          Application: {{ app_name }}
+          Replicas: {{ deployment_status.resources[0].status.availableReplicas }}
+          
+          Pour accéder à l'application :
+          1. Exécutez: kubectl port-forward svc/{{ app_name }} 8080:80 &
+          2. Ouvrez l'onglet PORTS dans Codespace
+          3. Rendez le port 8080 public
+          4. Ouvrez l'URL dans votre navigateur
+          ========================================

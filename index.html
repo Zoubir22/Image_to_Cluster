@@ -1,1 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to Cluster - EFREI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0aec0;
+            margin-bottom: 30px;
+        }
+
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .tech-badge:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .info-box {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            text-align: left;
+            border-radius: 0 10px 10px 0;
+            margin-top: 20px;
+        }
+
+        .info-box h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-box li {
+            padding: 5px 0;
+            color: #cbd5e0;
+        }
+
+        .info-box li::before {
+            content: "✓ ";
+            color: #48bb78;
+        }
+
+        footer {
+            margin-top: 30px;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🚀</div>
+        <h1>Image to Cluster</h1>
+        <p class="subtitle">Déploiement automatisé avec Packer, Docker & Kubernetes</p>
+        
+        <div class="tech-stack">
+            <span class="tech-badge">🐳 Docker</span>
+            <span class="tech-badge">📦 Packer</span>
+            <span class="tech-badge">⚙️ Ansible</span>
+            <span class="tech-badge">☸️ K3d</span>
+            <span class="tech-badge">🌐 Nginx</span>
+        </div>
+
+        <div class="info-box">
+            <h3>🎯 Ce projet démontre :</h3>
+            <ul>
+                <li>Construction d'image Docker avec Packer</li>
+                <li>Déploiement automatisé via Ansible</li>
+                <li>Orchestration sur cluster Kubernetes K3d</li>
+                <li>Infrastructure as Code (IaC)</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>EFREI Paris - Atelier DevOps</p>
+            <p>Image construite avec ❤️ et Packer</p>
+        </footer>
+    </div>
+</body>
+</html>
