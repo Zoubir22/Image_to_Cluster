@@ -311,6 +311,6 @@ Projet réalisé dans le cadre de l'atelier DevOps - EFREI Paris
 
 ## 👤 Auteur
 
-- **Nom** : [Votre nom]
-- **Promotion** : [Votre promotion]
+- **Nom Prénom** : LOUVOIS Arnaud
+- **Promotion** : 2026
 - **Date** : Février 2026
