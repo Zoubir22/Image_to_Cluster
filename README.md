@@ -244,16 +244,19 @@ kubectl get svc custom-nginx
 
 #### Étape 5 : Accès à l'application
 
+Pour accéder à l'application dans **GitHub Codespaces**, exécutez la commande suivante :
+
 ```bash
-make forward
+kubectl port-forward svc/custom-nginx 8080:80
 ```
 
-Pour accéder à l'application :
-1. Exécutez `make forward` (port-forward sur 8080)
-2. Ouvrez l'onglet **PORTS** dans Codespace
-3. Cliquez sur le 🌐 pour le port **8080**
-4. Rendez le port **public** si nécessaire
-5. Ouvrez l'URL dans votre navigateur
+Ensuite, pour accéder à l'application :
+1. Ouvrez l'onglet **PORTS** dans votre Codespace
+2. Faites un **clic droit** sur le port **8080**
+3. Sélectionnez **"Port Visibility"** → **"Public"**
+4. Cliquez sur l'icône 🌐 (ou l'URL) pour ouvrir l'application dans votre navigateur
+
+> **💡 Astuce** : Vous pouvez aussi utiliser `make forward` qui exécute la même commande en arrière-plan.
 
 ### 🔍 Commandes utiles
 
